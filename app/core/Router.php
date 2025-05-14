@@ -11,6 +11,26 @@ class Router
         $this->addRoute("GET", $uri, $callback);
     }
 
+    public function post(string $uri, callable $callback)
+    {
+        $this->addRoute("POST", $uri, $callback);
+    }
+
+    public function put(string $uri, callable $callback)
+    {
+        $this->addRoute("PUT", $uri, $callback);
+    }
+
+    public function delete(string $uri, callable $callback)
+    {
+        $this->addRoute("DELETE", $uri, $callback);
+    }
+
+    public function patch(string $uri, callable $callback)
+    {
+        $this->addRoute("PATCH", $uri, $callback);
+    }
+
     public function addRoute(string $method, string $uri, callable $callback)
     {
         $this->routes[$method . $uri] = $callback;

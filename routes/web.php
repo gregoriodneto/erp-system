@@ -15,4 +15,9 @@ return function($router, $conn)
         $controller = new ProductController($conn);
         $controller->index();
     });
+
+    $router->post('/products', function () use ($conn) {
+        $controller = new ProductController($conn);
+        $controller->store();
+    });
 };
