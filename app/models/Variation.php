@@ -1,8 +1,9 @@
 <?php
+namespace App\Models;
 
 use App\Core\Model;
 
 class Variation extends Model
 {
-    protected $table = "variations";
+    protected string $table = "variations";
 }

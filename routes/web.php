@@ -1,6 +1,7 @@
 <?php
 
 use App\Controllers\ProductController;
+use App\Controllers\VariationController;
 use App\Core\Router;
 
 /**
@@ -11,6 +12,7 @@ use App\Core\Router;
  */
 return function($router, $conn)
 {
+    // Products
     $router->get('/products', function () use ($conn) {
         $controller = new ProductController($conn);
         $controller->index();
@@ -18,6 +20,17 @@ return function($router, $conn)
 
     $router->post('/products', function () use ($conn) {
         $controller = new ProductController($conn);
+        $controller->store();
+    });
+
+    // Variations
+    $router->get('/variations', function () use ($conn) {
+        $controller = new VariationController($conn);
+        $controller->index();
+    });
+
+    $router->post('/variations', function () use ($conn) {
+        $controller = new VariationController($conn);
         $controller->store();
     });
 };

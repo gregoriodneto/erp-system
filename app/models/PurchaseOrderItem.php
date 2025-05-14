@@ -1,8 +1,9 @@
 <?php
+namespace App\Models;
 
 use App\Core\Model;
 
 class PurchaseOrderItem extends Model
 {
-    protected $table = "purchase_order_items";
+    protected string $table = "purchase_order_items";
 }
