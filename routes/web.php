@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\CouponController;
 use App\Controllers\ProductController;
 use App\Controllers\StockController;
 use App\Controllers\VariationController;
@@ -49,5 +50,16 @@ return function($router, $conn)
     $router->put('/stocks', function () use ($conn) {
         $controller = new StockController($conn);
         $controller->update();
+    });
+
+    // Coupons
+    $router->get('/coupons', function () use ($conn) {
+        $controller = new CouponController($conn);
+        $controller->index();
+    });
+
+    $router->post('/coupons', function () use ($conn) {
+        $controller = new CouponController($conn);
+        $controller->store();
     });
 };
