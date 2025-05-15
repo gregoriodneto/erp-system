@@ -1,6 +1,7 @@
 <?php
 
 use App\Controllers\AddressController;
+use App\Controllers\CartController;
 use App\Controllers\ClientController;
 use App\Controllers\CouponController;
 use App\Controllers\ProductController;
@@ -85,5 +86,31 @@ return function($router, $conn)
     $router->post('/addresses', function () use ($conn) {
         $controller = new AddressController($conn);
         $controller->store();
+    });
+
+    // Cart
+    $router->get('/cart', callback: function () use ($conn) {
+        $controller = new CartController($conn);
+        $controller->index();
+    });
+
+    $router->post('/cart', function () use ($conn) {
+        $controller = new CartController($conn);
+        $controller->store();
+    });
+
+    $router->delete('/cart/{variation_id}', function ($params) use ($conn) {
+        $controller = new CartController($conn);
+        $controller->remove($params['variation_id']);
+    });
+
+    $router->get('/cart/total', callback: function () use ($conn) {
+        $controller = new CartController($conn);
+        $controller->total();
+    });
+
+    $router->post('/cart/clear', callback: function () use ($conn) {
+        $controller = new CartController($conn);
+        $controller->clear();
     });
 };

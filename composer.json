@@ -6,6 +6,7 @@
         "psr-4": {
             "App\\": "app/",
             "App\\Config\\": "config/",
+            "App\\Sessions\\": "sessions/",
             "App\\Core\\": "app/core/",
             "App\\Core\\Helpers\\": "app/core/Helpers",
             "App\\Controllers\\": "app/controllers",

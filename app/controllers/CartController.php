@@ -1,0 +1,105 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Core\Controller;
+use App\Core\Helpers\Response;
+use App\Core\Helpers\Validator;
+use App\Models\Product;
+use App\Models\Variation;
+use App\Sessions\SessionManager;
+
+class CartController extends Controller
+{
+    public function index()
+    {
+        try {
+            $cart = SessionManager::view();
+            Response::success("Listagem do Carrinho de Compras", $cart);
+        } catch (\Throwable $th) {
+            Response::error($th->getMessage(), 500);
+        }
+    }
+
+    public function store()
+    {
+        try {
+            $data = json_decode(file_get_contents("php://input"), true);
+            
+            $missing = Validator::requiredFields(
+                ['variation_id', 'quantity'],
+                $data
+            );
+            if (!empty($missing))
+            {
+                Response::error(
+                    'Campos obrigatórios ausentes: ' . implode(',', $missing),
+                    422
+                );
+            }
+
+            $model_variation_product = new Variation($this->pdo);
+            $variation_product = $model_variation_product->findById($data['variation_id']);
+            if (empty($variation_product))
+            {
+                Response::error('Nenhuma variação do produto encontrado.',500);
+            }
+
+            $model_product = new Product($this->pdo);
+            $product = $model_product->findById($variation_product['product_id']);
+            if (empty($product))
+            {
+                Response::error('Nenhuma produto encontrado nesta variação.',500);
+            }
+
+            $cart = SessionManager::add([
+                'variation_id' => $variation_product['id'],
+                'price'=> $product['price_base'] + $variation_product['additional_price'],
+                'name' => $variation_product['name'],
+                'quantity' => $data['quantity']
+            ]);
+
+            Response::success('Item inserido no carrinho com sucesso!', $cart);
+
+        } catch (\Throwable $th) {
+            Response::error($th->getMessage(), 500);
+        }
+    }
+
+    public function remove($variation_id)
+    {
+        try {
+            if (!$variation_id)
+            {
+                Response::error(
+                    'Campos obrigatórios ausentes: variation_id',
+                    422
+                );
+            }
+            SessionManager::remove($variation_id);
+            Response::success("Item removido do carrinho com sucesso!", []);
+        } catch (\Throwable $th) {
+            Response::error($th->getMessage(), 500);
+        }
+    }
+
+    public function total()
+    {
+        try {
+            $total = SessionManager::total();
+            Response::success("Valor total do carrinho.", ["total"=> $total]);
+        } catch (\Throwable $th) {
+            Response::error($th->getMessage(), 500);
+        }
+    }
+
+    public function clear()
+    {
+        try {
+            SessionManager::clear();
+            Response::success("Sem nenhum item no carrinho de compras.", null);
+        } catch (\Throwable $th) {
+            Response::error($th->getMessage(), 500);
+        }
+    }
+}

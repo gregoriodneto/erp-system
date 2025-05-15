@@ -16,7 +16,7 @@ class AddressController extends Controller
             $addresses = $model->findAll();
             Response::success("Lista de endereços cadastrados.", $addresses);
         } catch (\PDOException $e) {
-            return Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
+            Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
         }
     }
 
@@ -48,7 +48,7 @@ class AddressController extends Controller
             }
             Response::success('Endereço cadastrado com sucesso!', $created);
         } catch (\PDOException $e) {
-            return Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
+            Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
         }
     }
 }
