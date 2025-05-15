@@ -4,17 +4,17 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Helpers\Response;
 use App\Core\Helpers\Validator;
-use App\Models\Coupon;
+use App\Models\Address;
 
-class CouponController extends Controller
+class AddressController extends Controller
 {
     public function index()
     {
-        $model = new Coupon($this->pdo);
+        $model = new Address($this->pdo);
         
         try {
-            $coupons = $model->findAll();
-            Response::success("Lista de Cupons cadastrados.", $coupons);
+            $addresses = $model->findAll();
+            Response::success("Lista de endereços cadastrados.", $addresses);
         } catch (\PDOException $e) {
             return Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
         }
@@ -23,14 +23,9 @@ class CouponController extends Controller
     public function store()
     {
         $data = json_decode(file_get_contents("php://input"), true);
-        
-        if (!$data['code'])
-        {
-            $data['code'] = self::generateCode();
-        }
 
         $missing = Validator::requiredFields([
-            'code', 'type_discount', 'discount_value', 'validity', 'minimum_subtotal'
+            'cep', 'street', 'district', 'city', 'state'
         ], $data);
         if (!empty($missing)) 
         {
@@ -40,25 +35,20 @@ class CouponController extends Controller
             );
         }
 
-        $model = new Coupon($this->pdo);
+        $model = new Address($this->pdo);
         
         try {
             $created = $model->create($data);
             if (!$created)
             {
                 Response::error(
-                'Erro ao criar cupom. Tente novamente.',
+                'Erro ao cadastrar o Endereço. Tente novamente.',
                  500
                 );
             }
-            Response::success('Cupom criado com sucesso!', $created);
+            Response::success('Endereço cadastrado com sucesso!', $created);
         } catch (\PDOException $e) {
             return Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
         }
-    }
-
-    protected function generateCode($tamanho = 10)
-    {
-        return substr(bin2hex((random_bytes($tamanho))),0, $tamanho);
     }
 }

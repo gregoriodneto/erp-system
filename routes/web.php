@@ -1,5 +1,7 @@
 <?php
 
+use App\Controllers\AddressController;
+use App\Controllers\ClientController;
 use App\Controllers\CouponController;
 use App\Controllers\ProductController;
 use App\Controllers\StockController;
@@ -60,6 +62,28 @@ return function($router, $conn)
 
     $router->post('/coupons', function () use ($conn) {
         $controller = new CouponController($conn);
+        $controller->store();
+    });
+
+    // Clients
+    $router->get('/clients', function () use ($conn) {
+        $controller = new ClientController($conn);
+        $controller->index();
+    });
+
+    $router->post('/clients', function () use ($conn) {
+        $controller = new ClientController($conn);
+        $controller->store();
+    });
+
+    // Addresses
+    $router->get('/addresses', function () use ($conn) {
+        $controller = new AddressController($conn);
+        $controller->index();
+    });
+
+    $router->post('/addresses', function () use ($conn) {
+        $controller = new AddressController($conn);
         $controller->store();
     });
 };
