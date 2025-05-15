@@ -1,6 +1,7 @@
 <?php
 
 use App\Controllers\ProductController;
+use App\Controllers\StockController;
 use App\Controllers\VariationController;
 use App\Core\Router;
 
@@ -32,5 +33,21 @@ return function($router, $conn)
     $router->post('/variations', function () use ($conn) {
         $controller = new VariationController($conn);
         $controller->store();
+    });
+
+    // Stocks
+    $router->get('/stocks', function () use ($conn) {
+        $controller = new StockController($conn);
+        $controller->index();
+    });
+
+    $router->post('/stocks', function () use ($conn) {
+        $controller = new StockController($conn);
+        $controller->store();
+    });
+
+    $router->put('/stocks', function () use ($conn) {
+        $controller = new StockController($conn);
+        $controller->update();
     });
 };

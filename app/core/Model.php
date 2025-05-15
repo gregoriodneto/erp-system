@@ -20,20 +20,20 @@ class Model
             $statement = $this->pdo->query("SELECT * FROM {$this->table}");
             return $statement->fetchAll(PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
-            exit($e->getMessage());
+            throw $e;
         }
     }
 
     public function findById(int $id): ?array
     {
         try {
-            $statement = $this->pdo->query("SELECT * FROM {$this->table} WHERE id = :id");
+            $statement = $this->pdo->prepare("SELECT * FROM {$this->table} WHERE `id` = :id");
             $statement->execute(["id"=> $id]);
             $data = $statement->fetch(PDO::FETCH_ASSOC);
 
             return $data ?: null;
         } catch (\PDOException $e) {
-            exit($e->getMessage());
+            throw $e;
         }
     }
 
@@ -47,21 +47,21 @@ class Model
             $statement = $this->pdo->prepare($sql);
             return $statement->execute($data);
         } catch (\PDOException $e) {
-            exit($e->getMessage());
+            throw $e;
         }
     }
 
     public function update(int $id, array $data): bool
     {
         try {
-            $set = implode(",", array_map(fn($key) => "$key = :$key", array_keys($data)));
+            $set = implode(", ", array_map(fn($key) => "`$key` = :$key", array_keys($data)));
             $data['id'] = $id;
 
-            $sql = "UPDATE {$this->table} SET $set WHERE id = :id";
+            $sql = sprintf("UPDATE `%s` SET %s WHERE `id` = :id", $this->table, $set);
             $statement = $this->pdo->prepare($sql);
             return $statement->execute($data);
         } catch (\PDOException $e) {
-            exit($e->getMessage());
+            throw $e;
         }
     }
 
