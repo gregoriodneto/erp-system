@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Helpers\Response;
 use App\Core\Helpers\Validator;
+use App\Models\Coupon;
 use App\Models\Product;
 use App\Models\Variation;
 use App\Sessions\SessionManager;
@@ -13,12 +14,14 @@ class CartController extends Controller
 {
     private Variation $variation;
     private Product $product;
+    private Coupon $coupon;
 
     public function __construct($pdo)
     {
         parent::__construct($pdo);
         $this->variation = new Variation($pdo);
         $this->product = new Product($pdo);
+        $this->coupon = new Coupon($pdo);
     }
 
     public function index()
@@ -73,6 +76,44 @@ class CartController extends Controller
         }
     }
 
+    public function storeCoupon()
+    {
+        try {
+            $data = json_decode(file_get_contents("php://input"), true);
+            
+            $missing = Validator::requiredFields(
+                ['coupon_id'],
+                $data
+            );
+            if (!empty($missing))
+            {
+                Response::error(
+                    'Campos obrigatórios ausentes: ' . implode(',', $missing),
+                    422
+                );
+            }
+
+            $coupon = $this->coupon->findById($data['coupon_id']);
+            if (empty($coupon))
+            {
+                Response::error('Nenhum cupom encontrado.',500);
+            }
+
+            $coupon_cart = SessionManager::addCoupon([
+                "id"               => $coupon["id"],
+                "code"             => $coupon["code"],
+                "type_discount"    => $coupon["type_discount"],
+                "discount_value"   => $coupon["discount_value"],
+                "validity"         => $coupon["validity"],
+                "minimum_subtotal" => $coupon["minimum_subtotal"],            
+            ]);
+
+            Response::success('Cupom inserido no carrinho com sucesso!', $coupon_cart);
+        } catch (\Throwable $th) {
+            Response::error($th->getMessage(), 500);
+        }
+    }
+
     public function remove($variation_id)
     {
         try {
@@ -85,6 +126,16 @@ class CartController extends Controller
             }
             SessionManager::remove($variation_id);
             Response::success("Item removido do carrinho com sucesso!", []);
+        } catch (\Throwable $th) {
+            Response::error($th->getMessage(), 500);
+        }
+    }
+
+    public function removeCoupon()
+    {
+        try {            
+            SessionManager::removeCoupon();
+            Response::success("Cupon removido com sucesso!", []);
         } catch (\Throwable $th) {
             Response::error($th->getMessage(), 500);
         }

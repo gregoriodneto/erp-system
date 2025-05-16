@@ -29,6 +29,11 @@ return function($router, $conn)
         $controller->store();
     });
 
+    $router->put('/products', function () use ($conn) {
+        $controller = new ProductController($conn);
+        $controller->update();
+    });
+
     // Variations
     $router->get('/variations', function () use ($conn) {
         $controller = new VariationController($conn);
@@ -113,6 +118,16 @@ return function($router, $conn)
     $router->post('/cart/clear', callback: function () use ($conn) {
         $controller = new CartController($conn);
         $controller->clear();
+    });
+
+    $router->post('/cart/coupon', function () use ($conn) {
+        $controller = new CartController($conn);
+        $controller->storeCoupon();
+    });
+
+    $router->post('/cart/coupon/remove', function () use ($conn) {
+        $controller = new CartController($conn);
+        $controller->removeCoupon();
     });
 
     // Purchase

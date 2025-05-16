@@ -52,4 +52,42 @@ class ProductController extends Controller
             return Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
         }
     }
+
+    public function update()
+    {
+        try {
+            $data = json_decode(file_get_contents("php://input"), true);
+
+            if (!isset($data['id']))
+            {
+                Response::error('ID do produto é obrigatório.',400);
+            }
+
+            $id = $data['id'];
+
+            $missing = Validator::requiredFields(['name', 'price_base'], $data);
+            if (!empty($missing))
+            {
+                Response::error('Campos obrigatórios ausentes: ' . implode(',', $missing), 422);
+            }
+
+            $existing = $this->product->findById($id);
+            if (!$existing)
+            {
+                Response::error('Produto não encontrado.', 404);
+            }
+
+            $uploaded = $this->product->update($id, $data);
+            if ($uploaded)
+            {
+                Response::success('Produto atualizado com sucesso!', ['id' => $id]);
+            }
+            else
+            {
+                Response::error('Erro ao atualizar o produto.', 500);
+            }
+        } catch (\PDOException $e) {
+            Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
+        }
+    }
 }

@@ -88,8 +88,17 @@ class PurchaseController extends Controller
             $total_result = SessionManager::total();
             $data['subtotal']       = $total_result['subtotal'];
             $data['freight']        = $total_result['freight'];
-            $data['total']          = $total_result['total'];
+            $data['total']          = $total_result['total'];            
             $data['status']         = "pending";
+
+            $coupon = $cart_items["coupon"] ?? null;
+            if (
+                $coupon &&
+                strtotime($coupon["validity"]) >= time()
+            )
+            {
+                $data['coupon_id']      = $coupon["id"];
+            }
 
             $this->pdo->beginTransaction();
 
@@ -103,7 +112,7 @@ class PurchaseController extends Controller
             }
             $purchase_order = $this->purchaseOrder->findById($this->purchaseOrder->lastInsertId());
             
-            foreach ($cart_items as $item) {
+            foreach ($cart_items["items"] as $item) {
                 $data_item['purchase_orders_id']    = $purchase_order['id'];
                 $data_item['variation_id']          = $item['variation_id'];
                 $data_item['quantity']              = $item['quantity'];
@@ -139,10 +148,14 @@ class PurchaseController extends Controller
                         'price_unity'  => $item['price_unity'],
                         'total_item'   => $item['total_item'],
                     ];
-                }, $order_items)
+                }, $order_items),
+                "coupon" => $coupon,
+                "address" => $address,
+                "client" => $client
             ];
 
             $this->pdo->commit();
+            SessionManager::clear();
             Response::success("Pedido finalizado com sucesso!", $response_data);
         } catch (\PDOException $e) {
             $this->pdo->rollBack();
