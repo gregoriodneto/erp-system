@@ -5,6 +5,7 @@ use App\Controllers\CartController;
 use App\Controllers\ClientController;
 use App\Controllers\CouponController;
 use App\Controllers\ProductController;
+use App\Controllers\PurchaseController;
 use App\Controllers\StockController;
 use App\Controllers\VariationController;
 use App\Core\Router;
@@ -112,5 +113,11 @@ return function($router, $conn)
     $router->post('/cart/clear', callback: function () use ($conn) {
         $controller = new CartController($conn);
         $controller->clear();
+    });
+
+    // Purchase
+    $router->get('/purchase', callback: function () use ($conn) {
+        $controller = new PurchaseController($conn);
+        $controller->index();
     });
 };

@@ -8,12 +8,16 @@ use App\Models\Coupon;
 
 class CouponController extends Controller
 {
+    private Coupon $coupon;
+    public function __construct($pdo)
+    {
+        parent::__construct($pdo);
+        $this->coupon = new Coupon($pdo);
+    }
     public function index()
     {
-        $model = new Coupon($this->pdo);
-        
         try {
-            $coupons = $model->findAll();
+            $coupons = $this->coupon->findAll();
             Response::success("Lista de Cupons cadastrados.", $coupons);
         } catch (\PDOException $e) {
             return Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
@@ -40,10 +44,8 @@ class CouponController extends Controller
             );
         }
 
-        $model = new Coupon($this->pdo);
-        
         try {
-            $created = $model->create($data);
+            $created = $this->coupon->create($data);
             if (!$created)
             {
                 Response::error(
@@ -51,7 +53,8 @@ class CouponController extends Controller
                  500
                 );
             }
-            Response::success('Cupom criado com sucesso!', $created);
+            $coupon = $this->coupon->findById($this->coupon->lastInsertId());
+            Response::success('Cupom criado com sucesso!', $coupon);
         } catch (\PDOException $e) {
             return Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
         }

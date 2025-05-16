@@ -70,4 +70,9 @@ class Model
         $statement = $this->pdo->prepare( "DELETE FROM {$this->table} WHERE id = :id");
         return $statement->execute(['id' => $id]);
     }
+
+    public function lastInsertId()
+    {
+        return $this->pdo->lastInsertId();
+    }
 }

@@ -8,12 +8,18 @@ use App\Models\Client;
 
 class ClientController extends Controller
 {
+    private Client $client;
+
+    public function __construct($pdo)
+    {
+        parent::__construct($pdo);
+        $this->client = new Client($pdo);
+    }
+
     public function index()
     {
-        $model = new Client($this->pdo);
-        
         try {
-            $clients = $model->findAll();
+            $clients = $this->client->findAll();
             Response::success("Lista de clientes cadastrados.", $clients);
         } catch (\PDOException $e) {
             return Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
@@ -34,11 +40,9 @@ class ClientController extends Controller
                  422
             );
         }
-
-        $model = new Client($this->pdo);
         
         try {
-            $created = $model->create($data);
+            $created = $this->client->create($data);
             if (!$created)
             {
                 Response::error(
@@ -46,7 +50,8 @@ class ClientController extends Controller
                  500
                 );
             }
-            Response::success('Cliente cadastrado com sucesso!', $created);
+            $client = $this->client->findById($this->client->lastInsertId());
+            Response::success('Cliente cadastrado com sucesso!', $client);
         } catch (\PDOException $e) {
             return Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
         }

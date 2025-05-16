@@ -11,6 +11,16 @@ use App\Sessions\SessionManager;
 
 class CartController extends Controller
 {
+    private Variation $variation;
+    private Product $product;
+
+    public function __construct($pdo)
+    {
+        parent::__construct($pdo);
+        $this->variation = new Variation($pdo);
+        $this->product = new Product($pdo);
+    }
+
     public function index()
     {
         try {
@@ -38,15 +48,13 @@ class CartController extends Controller
                 );
             }
 
-            $model_variation_product = new Variation($this->pdo);
-            $variation_product = $model_variation_product->findById($data['variation_id']);
+            $variation_product = $this->variation->findById($data['variation_id']);
             if (empty($variation_product))
             {
                 Response::error('Nenhuma variação do produto encontrado.',500);
             }
 
-            $model_product = new Product($this->pdo);
-            $product = $model_product->findById($variation_product['product_id']);
+            $product = $this->product->findById($variation_product['product_id']);
             if (empty($product))
             {
                 Response::error('Nenhuma produto encontrado nesta variação.',500);
@@ -60,7 +68,6 @@ class CartController extends Controller
             ]);
 
             Response::success('Item inserido no carrinho com sucesso!', $cart);
-
         } catch (\Throwable $th) {
             Response::error($th->getMessage(), 500);
         }

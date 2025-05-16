@@ -10,18 +10,18 @@ use Exception;
 
 class AddressController extends Controller
 {
+    private Address $address;
     private CepService $cepService;
     public function __construct($pdo)
     {
         parent::__construct($pdo);
-        $this->cepService = new CepService();
+        $this->address = new Address($pdo);
+        $this->cepService = new CepService();        
     }
     public function index()
     {
-        $model = new Address($this->pdo);
-        
         try {
-            $addresses = $model->findAll();
+            $addresses = $this->address->findAll();
             Response::success("Lista de endereços cadastrados.", $addresses);
         } catch (\PDOException $e) {
             Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
@@ -44,11 +44,9 @@ class AddressController extends Controller
                  422
             );
         }
-
-        $model = new Address($this->pdo);
         
         try {
-            $created = $model->create($data);
+            $created = $this->address->create($data);
             if (!$created)
             {
                 Response::error(
@@ -56,7 +54,8 @@ class AddressController extends Controller
                  500
                 );
             }
-            Response::success('Endereço cadastrado com sucesso!', $created);
+            $address = $this->address->findById($this->address->lastInsertId());
+            Response::success('Endereço cadastrado com sucesso!', $address);
         } catch (\PDOException $e) {
             Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
         }
