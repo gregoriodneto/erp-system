@@ -120,4 +120,9 @@ return function($router, $conn)
         $controller = new PurchaseController($conn);
         $controller->index();
     });
+
+    $router->post('/purchase', callback: function () use ($conn) {
+        $controller = new PurchaseController($conn);
+        $controller->store();
+    });
 };

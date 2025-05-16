@@ -55,7 +55,7 @@ class SessionManager
 
         return [
             'subtotal' => $subtotal,
-            'frete' => $frete,
+            'freight' => $frete,
             'total' => $subtotal + $frete
         ];
     }
