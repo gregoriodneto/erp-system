@@ -50,7 +50,14 @@ class SessionManager
             $subtotal += $item["price"] * $item["quantity"];
         }
         
-        return $subtotal;
+        $frete = $subtotal === 0 || $subtotal > 200 ? 0 :
+                ($subtotal >= 52 && $subtotal <= 166.59 ? 15 : 20);
+
+        return [
+            'subtotal' => $subtotal,
+            'frete' => $frete,
+            'total' => $subtotal + $frete
+        ];
     }
 
     public static function clear()

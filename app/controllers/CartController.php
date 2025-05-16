@@ -86,8 +86,8 @@ class CartController extends Controller
     public function total()
     {
         try {
-            $total = SessionManager::total();
-            Response::success("Valor total do carrinho.", ["total"=> $total]);
+            $data = SessionManager::total();
+            Response::success("Valor total do carrinho.", $data);
         } catch (\Throwable $th) {
             Response::error($th->getMessage(), 500);
         }
