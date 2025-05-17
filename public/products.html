@@ -39,6 +39,7 @@
 
         async function loadProducts() {
             const tbody = document.getElementById('lista-produtos');
+            tbody.innerHTML = '';
             const res = await fetch(API_URL)
             .then(res => res.json())
             .then(produtos => {
@@ -53,7 +54,7 @@
             })
             .catch(err => {
                 console.error('Erro ao carregar produtos:', err);
-            })
+            });
         }
 
         document.getElementById('form-produto').addEventListener('submit', async (e) => {
@@ -65,8 +66,8 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
             });
-            e.target.reset();
-            loadProducts();
+            e.target.reset();  
+            loadProducts();          
         });
 
         loadProducts();
