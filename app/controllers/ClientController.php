@@ -22,7 +22,7 @@ class ClientController extends Controller
             $clients = $this->client->findAll();
             Response::success("Lista de clientes cadastrados.", $clients);
         } catch (\PDOException $e) {
-            return Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
+            Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
         }
     }
 

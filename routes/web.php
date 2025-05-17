@@ -9,6 +9,7 @@ use App\Controllers\PurchaseController;
 use App\Controllers\StockController;
 use App\Controllers\VariationController;
 use App\Core\Router;
+use App\Webhook\WebhookStatusPurchase;
 
 /**
  * Define as rotas da aplicação
@@ -139,5 +140,16 @@ return function($router, $conn)
     $router->post('/purchase', callback: function () use ($conn) {
         $controller = new PurchaseController($conn);
         $controller->store();
+    });
+
+    // Webhook
+    $router->get('/webhook/status-consult', callback: function () use ($conn) {
+        $controller = new WebhookStatusPurchase($conn);
+        $controller->getStatus();
+    });
+
+    $router->post('/webhook/status', callback: function () use ($conn) {
+        $controller = new WebhookStatusPurchase($conn);
+        $controller->status();
     });
 };

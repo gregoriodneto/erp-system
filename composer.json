@@ -9,9 +9,11 @@
             "App\\Config\\": "config/",
             "App\\Sessions\\": "sessions/",
             "App\\Emails\\": "emails/",
+            "App\\Webhook\\": "webhook/",
             "App\\Core\\": "app/core/",
             "App\\Core\\Helpers\\": "app/core/Helpers",
             "App\\Controllers\\": "app/controllers",
+            "App\\Middlewares\\": "app/middlewares",
             "App\\Services\\": "app/services",
             "App\\Models\\": "app/models"
         }
