@@ -1,23 +1,23 @@
-# ERP SYSTEM
+# 🧾 ERP SYSTEM
 
-Este é um sistema ERP simples desenvolvido em PHP.
+Este é um sistema ERP simples desenvolvido em PHP, com funcionalidades básicas para gerenciamento de pedidos, produtos, sessões e integração com serviços externos como envio de e-mails e consulta de CEP.
 
-## Estrutura do Projeto
+## 📁 Estrutura do Projeto
 ```bash
-    /public - Arquivos públicos (CSS, JS, etc.)
-    /app - Controladores, Modelos, Views e lógica da aplicação
-    /config - Configurações do banco de dados e outras configurações
-    /webhook - Webhook para mudança do status do pedido.
-    /routes - Rotas da api.
-    /sessions - Gerenciamento da sessão em relação ao carrinho de compras.
-    /emails - Serviço de envio de e-mails
-    /sql - Arquivos SQL de banco de dados
-    /vendor - Dependências do Composer
-    /bootstrap.php - Carregamento de variáveis de ambiente
-    composer.json - Dependências e autoload do projeto
+    /public         # Arquivos públicos (CSS, JS, etc.)
+   /app            # Controladores, Modelos, Views e lógica da aplicação
+   /config         # Configurações do banco de dados e outras configurações
+   /webhook        # Webhook para mudança do status do pedido
+   /routes         # Rotas da API
+   /sessions       # Gerenciamento da sessão e carrinho de compras
+   /emails         # Serviço de envio de e-mails
+   /sql            # Arquivos SQL de banco de dados
+   /vendor         # Dependências gerenciadas pelo Composer
+   bootstrap.php   # Carregamento de variáveis de ambiente
+   composer.json   # Dependências e autoload do projeto
 ```
 
-## Instalação
+## ⚙️ Instalação
 
 1. Clone o repositório:
 ```bash
@@ -58,3 +58,10 @@ WEBHOOK_TOKEN=secrettoken123
 ```bash
    http://127.0.0.1:8000/products.html
 ```
+
+## 📌 Informações Adicionais
+- ✅ Projeto leve e fácil de instalar
+- 📨 Envio de e-mails via SMTP configurável
+- 🌐 Integração com a API ViaCEP
+- 🧾 Suporte a Webhooks para atualização de pedidos
+- 🛒 Carrinho de compras com gerenciamento de sessão
