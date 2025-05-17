@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Helpers\Response;
 use App\Core\Helpers\Validator;
+use App\Emails\MailManager;
 use App\Models\Address;
 use App\Models\Client;
 use App\Models\Coupon;
@@ -156,10 +157,35 @@ class PurchaseController extends Controller
 
             $this->pdo->commit();
             SessionManager::clear();
+            $this->sender($client, $address);
             Response::success("Pedido finalizado com sucesso!", $response_data);
         } catch (\PDOException $e) {
             $this->pdo->rollBack();
             Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
         }
+    }
+
+    protected function sender($client, $address)
+    {
+        $message = "
+            <h2>Pedido realizado com sucesso!</h2>
+            <p>Olá <strong>{$client['name']}</strong>, seu pedido foi recebido com sucesso.</p>
+            <h3>Endereço de entrega:</h3>
+            <ul>
+                <li><strong>CEP:</strong> {$address['cep']}</li>
+                <li><strong>Rua:</strong> {$address['street']}</li>
+                <li><strong>Bairro:</strong> {$address['district']}</li>
+                <li><strong>Cidade:</strong> {$address['city']}</li>
+                <li><strong>Estado:</strong> {$address['state']}</li>
+            </ul>
+            <p>Obrigado por comprar conosco!</p>
+        ";
+
+        MailManager::send(
+            $client["email"],
+            "Confirmação de Pedido",
+            $message,
+            $_ENV["SENDER_MAIL"]
+        );
     }
 }
