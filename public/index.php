@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../public/cors.php';
 require_once __DIR__ . '/../bootstrap.php';
 
 use App\Config\Database;
