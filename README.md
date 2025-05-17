@@ -4,7 +4,7 @@ Este é um sistema ERP simples desenvolvido em PHP, com funcionalidades básicas
 
 ## 📁 Estrutura do Projeto
 ```bash
-    /public         # Arquivos públicos (CSS, JS, etc.)
+   /public         # Arquivos públicos (CSS, JS, etc.)
    /app            # Controladores, Modelos, Views e lógica da aplicação
    /config         # Configurações do banco de dados e outras configurações
    /webhook        # Webhook para mudança do status do pedido
