@@ -59,6 +59,11 @@ WEBHOOK_TOKEN=secrettoken123
    http://127.0.0.1:8000/products.html
 ```
 
+6. Para acessar o swagger para requisições:
+```bash
+   http://127.0.0.1:8000/docs/index.html
+```
+
 ## 📌 Informações Adicionais
 - ✅ Projeto leve e fácil de instalar
 - 📨 Envio de e-mails via SMTP configurável
