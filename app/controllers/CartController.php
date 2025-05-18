@@ -7,6 +7,7 @@ use App\Core\Helpers\Response;
 use App\Core\Helpers\Validator;
 use App\Models\Coupon;
 use App\Models\Product;
+use App\Models\Stock;
 use App\Models\Variation;
 use App\Sessions\SessionManager;
 
@@ -15,6 +16,7 @@ class CartController extends Controller
     private Variation $variation;
     private Product $product;
     private Coupon $coupon;
+    private Stock $stock;
 
     public function __construct($pdo)
     {
@@ -22,6 +24,7 @@ class CartController extends Controller
         $this->variation = new Variation($pdo);
         $this->product = new Product($pdo);
         $this->coupon = new Coupon($pdo);
+        $this->stock = new Stock($pdo);
     }
 
     public function index()
@@ -63,12 +66,30 @@ class CartController extends Controller
                 Response::error('Nenhuma produto encontrado nesta variação.',500);
             }
 
+            $stock = $this->stock->findStockByVariationId($variation_product['id']);
+            if (empty($stock))
+            {
+                Response::error('Variação de produto não encontra-se no estoque.',500);
+            }
+
+            if ((int)$data['quantity'] > $stock['quantity'])
+            {
+                Response::error('Quantidade maior do que tem disponível no estoque.',500);
+            }
+
             $cart = SessionManager::add([
                 'variation_id' => $variation_product['id'],
                 'price'=> $product['price_base'] + $variation_product['additional_price'],
                 'name' => $variation_product['name'],
                 'quantity' => $data['quantity']
             ]);
+
+            $stock['quantity'] -= $data['quantity'];
+            $stock_updated = $this->stock->update($stock['id'], $stock);
+            if (!$stock_updated)
+            {
+                Response::error('Erro no momento de atualização do Estoque.',500);
+            }
 
             Response::success('Item inserido no carrinho com sucesso!', $cart);
         } catch (\Throwable $th) {
