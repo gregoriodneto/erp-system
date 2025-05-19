@@ -44,6 +44,12 @@
   <h1>Endereços</h1>
 
   <form id="form-endereco" class="mb-4">
+    <div class="form-check form-switch mb-2">
+      <input class="form-check-input" type="checkbox" id="enableViaCep" checked>
+      <label class="form-check-label" for="enableViaCep">Buscar endereço automaticamente pelo CEP (ViaCEP)</label>
+    </div>
+    <p id="cepHelp" class="text-muted mb-3">Digite o CEP e pressione <strong>Enter</strong> para preencher os campos automaticamente.</p>
+
     <div class="row g-3">
       <div class="col-md-2">
         <input type="text" name="cep" class="form-control" placeholder="CEP" required>
@@ -80,6 +86,92 @@
   </table>
 
   <script>
+    const API_URL = 'http://127.0.0.1:8000';
+
+    const cepInput = document.querySelector('input[name="cep"]');
+    const streetInput = document.querySelector('input[name="street"]');
+    const districtInput = document.querySelector('input[name="district"]');
+    const cityInput = document.querySelector('input[name="city"]');
+    const stateInput = document.querySelector('input[name="state"]');
+    const viaCepCheckbox = document.getElementById('enableViaCep');
+    const cepHelp = document.getElementById('cepHelp');
+
+    function toggleAddressInputs(disabled) {
+      streetInput.disabled = disabled;
+      districtInput.disabled = disabled;
+      cityInput.disabled = disabled;
+      stateInput.disabled = disabled;
+    }
+
+    toggleAddressInputs(viaCepCheckbox.checked);
+    cepHelp.style.display = viaCepCheckbox.checked ? 'block' : 'none';
+
+    viaCepCheckbox.addEventListener('change', () => {
+      const usarViaCep = viaCepCheckbox.checked;
+      toggleAddressInputs(usarViaCep);
+      cepHelp.style.display = usarViaCep ? 'block' : 'none';
+    });
+
+    async function loadAddresses() {
+        const tbody = document.getElementById('lista-enderecos');
+        tbody.innerHTML = '';
+        const res = await fetch(API_URL + '/addresses')
+        .then(res => res.json())
+        .then(addresses => {
+            addresses.data.forEach(a => {
+            tbody.innerHTML += `
+                    <tr>
+                        <td>${a.cep}</td>
+                        <td>${a.street}</td>
+                        <td>${a.district}</td>
+                        <td>${a.city}</td>
+                        <td>${a.state}</td>
+                    </tr>
+                `;
+            });
+        })
+        .catch(err => {
+            console.error('Erro ao carregar endereço:', err);
+        });
+    }
+
+    cepInput.addEventListener("keydown", async (event) => {
+      if (event.key === "Enter" && viaCepCheckbox.checked) {
+        try {
+          const response = await fetch(API_URL + '/addresses/consult-by-zipcode', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cep: cepInput.value }),
+          });
+
+          if (!response.ok) throw new Error('Erro ao buscar cep');
+          const data = await response.json();
+
+          streetInput.value   = data.data.street || '';
+          districtInput.value = data.data.district || '';
+          cityInput.value     = data.data.city || '';
+          stateInput.value    = data.data.state || '';
+        } catch (error) {
+          console.error('Erro ao carregar o cep:', err);
+        }
+      }
+    });
+
+    document.getElementById('form-endereco').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+
+      await fetch(API_URL + '/addresses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+      });
+      e.target.reset();
+      loadAddresses();        
+    });
+
+    loadAddresses();
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
