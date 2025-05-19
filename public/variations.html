@@ -18,6 +18,9 @@
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" href="/products.html">Produtos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/variations.html">Variações dos Produtos</a>
                     </li>                
                     <li class="nav-item">
                         <a class="nav-link" href="/coupons.html">Cupons</a>
@@ -43,8 +46,9 @@
     <form id="form-variacao" class="mb-4">
         <div class="row g-3 align-items-end">
         <div class="col-md-3">
-            <label class="form-label">Produto (ID)</label>
-            <input type="number" class="form-control" name="product_id" placeholder="Ex: 1" required>
+        <label for="product_id" class="form-label">Produto</label>
+            <select name="product_id" id="product_id" class="form-select" required>
+            </select>
         </div>
         <div class="col-md-4">
             <label class="form-label">Nome da Variação</label>
@@ -73,6 +77,64 @@
     </table>
 
     <script>
+        const API_URL = 'http://127.0.0.1:8000';
+
+        async function loadProductsVariations() {
+            const tbody = document.getElementById('lista-variacoes');
+            tbody.innerHTML = '';
+            const res = await fetch(API_URL + '/variations')
+            .then(res => res.json())
+            .then(produtos => {
+                produtos.data.forEach(p => {
+                tbody.innerHTML += `
+                        <tr>
+                            <td>${p.product_id}</td>
+                            <td>${p.name}</td>
+                            <td>R$ ${p.additional_price}</td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(err => {
+                console.error('Erro ao carregar produtos:', err);
+            });
+        }
+        
+
+        async function loadProducts() {
+            const tbody = document.getElementById('product_id');
+            tbody.innerHTML = '';
+            const res = await fetch(API_URL + '/products')
+            .then(res => res.json())
+            .then(produtos => {
+                produtos.data.forEach(p => {
+                tbody.innerHTML += `
+                        <option value=${p.id}>${p.name}</option>
+                    `;
+                });
+            })
+            .catch(err => {
+                console.error('Erro ao carregar produtos:', err);
+            });
+        }
+
+        document.getElementById('form-variacao').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            await fetch(API_URL + '/variations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+            e.target.reset();
+            loadProductsVariations();
+            loadProducts();          
+        });
+
+        loadProductsVariations();
+        loadProducts();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
