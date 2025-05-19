@@ -109,7 +109,9 @@
 
         async function loadProductsVariations() {
             const tbody = document.getElementById('variation_id');
-            tbody.innerHTML = '';
+            tbody.innerHTML += `
+                    <option value="" disabled selected>Selecione a variação do produto</option>
+            `
             const res = await fetch(API_URL + '/variations')
             .then(res => res.json())
             .then(variations => {

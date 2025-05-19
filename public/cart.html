@@ -121,6 +121,24 @@
   <script>
     const API_URL = 'http://127.0.0.1:8000';
 
+    document.getElementById('form-finalizar').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+        await fetch(API_URL + '/purchase', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        e.target.reset();
+        loadProductsVariations();
+        loadCoupons();
+        loadCartGetTotal();
+        loadCart();
+        loadAddresses();
+        loadClients();
+    });
+
     document.getElementById('form-carrinho').addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
@@ -161,7 +179,9 @@
 
     async function loadClients() {
         const tbody = document.getElementById('client_id');
-        tbody.innerHTML = '';
+        tbody.innerHTML += `
+            <option value="" disabled selected>Selecione um cliente</option>
+          `
         const res = await fetch(API_URL + '/clients')
         .then(res => res.json())
         .then(clients => {
@@ -178,7 +198,9 @@
 
     async function loadAddresses() {
         const tbody = document.getElementById('address_id');
-        tbody.innerHTML = '';
+        tbody.innerHTML += `
+            <option value="" disabled selected>Selecione um endereço</option>
+        `
         const res = await fetch(API_URL + '/addresses')
         .then(res => res.json())
         .then(addresses => {
@@ -211,7 +233,6 @@
       const res = await fetch(API_URL + '/cart')
       .then(res => res.json())
       .then(cart => {
-        console.log(cart)
           cart?.data?.items?.forEach(async (c) => {
             const variationName = await loadVariationProductById(c.variation_id);
               tbody.innerHTML += `
@@ -251,7 +272,9 @@
 
     async function loadCoupons() {
         const tbody = document.getElementById('coupon_id');
-        tbody.innerHTML = '';
+        tbody.innerHTML += `
+            <option value="" disabled selected>Selecione um cupom</option>
+        `
         const res = await fetch(API_URL + '/coupons')
         .then(res => res.json())
         .then(coupons => {
@@ -268,7 +291,9 @@
 
     async function loadProductsVariations() {
         const tbody = document.getElementById('variation_id');
-        tbody.innerHTML = '';
+        tbody.innerHTML += `
+          <option value="" disabled selected>Selecione a variação do produto</option>
+        `
         const res = await fetch(API_URL + '/variations')
         .then(res => res.json())
         .then(variations => {

@@ -47,7 +47,7 @@
         <div class="row g-3 align-items-end">
         <div class="col-md-3">
         <label for="product_id" class="form-label">Produto</label>
-            <select name="product_id" id="product_id" class="form-select" required>
+            <select name="product_id" id="product_id" class="form-select" required>                
             </select>
         </div>
         <div class="col-md-4">
@@ -103,7 +103,9 @@
 
         async function loadProducts() {
             const tbody = document.getElementById('product_id');
-            tbody.innerHTML = '';
+            tbody.innerHTML += `
+                    <option value="" disabled selected>Selecione o produto</option>
+            `
             const res = await fetch(API_URL + '/products')
             .then(res => res.json())
             .then(produtos => {
