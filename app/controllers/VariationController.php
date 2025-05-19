@@ -26,6 +26,19 @@ class VariationController extends Controller
         }
     }
 
+    public function getById($id)
+    {
+        try {
+            $variation = $this->variation->findById($id);
+            if (!$variation) {
+                Response::error('Variação de produto não encontrado.', 404);
+            }
+            Response::success('Lista de variações',$variation);
+        } catch (\PDOException $e) {
+            Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
+        }
+    }
+
     public function store()
     {
         try {

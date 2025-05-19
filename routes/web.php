@@ -41,6 +41,11 @@ return function($router, $conn)
         $controller->index();
     });
 
+    $router->get('/variations/{variation_id}', function ($params) use ($conn) {
+        $controller = new VariationController($conn);
+        $controller->getById($params['variation_id']);
+    });
+
     $router->post('/variations', function () use ($conn) {
         $controller = new VariationController($conn);
         $controller->store();

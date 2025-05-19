@@ -133,6 +133,33 @@
         }
       }
     },
+    "/variations/{variation_id}": {
+      "get": {
+        "tags": [
+          "Variações"
+        ],
+        "summary": "Buscar a variação do produto pelo id",
+        "parameters": [
+          {
+            "name": "variation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "description": "ID da variação do produto para busca"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Variação do produto encontrado com sucesso"
+          },
+          "404": {
+            "description": "Item não encontrado"
+          }
+        }
+      }
+    },
     "/stocks": {
       "get": {
         "tags": [
