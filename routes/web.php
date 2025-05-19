@@ -95,6 +95,11 @@ return function($router, $conn)
         $controller->store();
     });
 
+    $router->post('/addresses/consult-by-zipcode', function () use ($conn) {
+        $controller = new AddressController($conn);
+        $controller->findAddressByZipCode();
+    });
+
     // Cart
     $router->get('/cart', callback: function () use ($conn) {
         $controller = new CartController($conn);

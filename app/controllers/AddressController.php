@@ -61,6 +61,37 @@ class AddressController extends Controller
         }
     }
 
+    public function findAddressByZipCode()
+    {
+        try {
+            $data = json_decode(file_get_contents("php://input"), true);
+            $missing = Validator::requiredFields([
+            'cep'
+            ], $data);
+            if (!empty($missing)) 
+            {
+                Response::error(
+                    'Campos obrigatórios ausentes: ' . implode(',', $missing),
+                    422
+                );
+            }
+
+            $data = $this->validate($data);
+
+            if (!$data) 
+            {
+                Response::error(
+                    'Não encontrado endereço com este cep.',
+                    404
+                );
+            }
+
+            Response::success('Endereço encontrado com sucesso com base no cep.', $data);
+        } catch (\PDOException $e) {
+            Response::error('Erro no banco de dados: ' . $e->getMessage(), 500);
+        }
+    }
+
     protected function validate($data)
     {
         $autoFillFields = ['cep', 'street', 'district', 'city', 'state'];

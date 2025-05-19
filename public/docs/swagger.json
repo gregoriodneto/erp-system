@@ -290,6 +290,29 @@
         }
       }
     },
+    "/addresses/consult-by-zipcode": {
+      "post": {
+        "tags": [
+          "Endereço"
+        ],
+        "summary": "Busca um endereço com base no cep.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EndereçoByZipCode"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Endereço encontrado com sucesso!"
+          }
+        }
+      }
+    },
     "/cart": {
       "get": {
         "tags": [
@@ -592,6 +615,14 @@
         }
       },
       "Endereço": {
+        "type": "object",
+        "properties": {
+          "cep": {
+            "type": "string"
+          }
+        }
+      },
+      "EndereçoByZipCode": {
         "type": "object",
         "properties": {
           "cep": {
