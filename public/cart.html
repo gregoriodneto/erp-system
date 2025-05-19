@@ -35,6 +35,9 @@
                         <a class="nav-link" href="/stocks.html">Estoque</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="/orders.html">Ordens de Compras</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/cart.html">Carrinho de Compras</a>
                     </li>
                 </ul>
@@ -131,12 +134,7 @@
             body: JSON.stringify(data),
         });
         e.target.reset();
-        loadProductsVariations();
-        loadCoupons();
-        loadCartGetTotal();
-        loadCart();
-        loadAddresses();
-        loadClients();
+        window.location.href = "/orders.html";
     });
 
     document.getElementById('form-carrinho').addEventListener('submit', async (e) => {
@@ -150,12 +148,8 @@
             body: JSON.stringify(data),
         });
         e.target.reset();
-        loadProductsVariations();
-        loadCoupons();
         loadCartGetTotal();
         loadCart();
-        loadAddresses();
-        loadClients();
     });
 
     document.getElementById('form-cupom').addEventListener('submit', async (e) => {
@@ -169,12 +163,8 @@
             body: JSON.stringify(data),
         });
         e.target.reset();
-        loadProductsVariations();
-        loadCoupons();
         loadCartGetTotal();
         loadCart();
-        loadAddresses();
-        loadClients();
     });
 
     async function loadClients() {

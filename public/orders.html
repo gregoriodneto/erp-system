@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Ordens de Compra</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    .order {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .order h2 {
+      margin-top: 0;
+    }
+
+    .order-info, .items {
+      margin-bottom: 12px;
+    }
+
+    .items table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .items th, .items td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .items th {
+      background-color: #f2f2f2;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+  </style>
+
+</head>
+<body class="container my-4">
+    <nav class="navbar navbar-expand-lg mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Minha Loja</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Alternar navegação">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/products.html">Produtos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/variations.html">Variações dos Produtos</a>
+                    </li>                 
+                    <li class="nav-item">
+                        <a class="nav-link" href="/coupons.html">Cupons</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/clients.html">Clientes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/address.html">Endereços</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/stocks.html">Estoque</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/orders.html">Ordens de Compras</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cart.html">Carrinho de Compras</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+  <h1 class="mb-4">Ordens de Compra</h1>
+
+  <div id="ordens-container"></div>
+
+  <script>
+    const API_URL = 'http://127.0.0.1:8000';
+    
+    async function loadOrders() {        
+        const container = document.getElementById('ordens-container');
+        
+        const res = await fetch(API_URL + '/purchase')
+        .then(res => res.json())
+        .then(orders => {          
+          orders.data.forEach(order => {
+            const div = document.createElement('div');
+            div.className = 'order';
+
+            div.innerHTML = `
+              <h2>Ordem #${order.id}</h2>
+              <div class="order-info">
+                <p><span class="label">Cliente:</span> ${order.client?.name ?? ''}</p>
+                <p><span class="label">Endereço:</span> ${order.address?.street ?? ''}</p>
+                <p><span class="label">Cupom:</span> ${order.coupon?.code ?? ''}</p>
+                <p><span class="label">Status:</span> ${order.status}</p>
+                <p><span class="label">Subtotal:</span> R$ ${order.subtotal}</p>
+                <p><span class="label">Frete:</span> R$ ${order.freight}</p>
+                <p><span class="label">Total:</span> R$ ${order.total}</p>
+                <p><span class="label">Criado em:</span> ${order.created_at}</p>
+                <p><span class="label">Atualizado em:</span> ${order.updated_at}</p>
+              </div>
+              <div class="items">
+                <h3>Itens</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Produto</th>
+                      <th>Quantidade</th>
+                      <th>Preço Unitário</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${order.items.map(item => `
+                      <tr>
+                        <td>${item.variation_name}</td>
+                        <td>${item.quantity}</td>
+                        <td>R$ ${item.price_unity}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            `;
+
+            container.appendChild(div);
+          });
+        })
+        .catch(err => {
+            console.error('Erro ao carregar clientes:', err);
+        });
+    }
+
+    loadOrders();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
