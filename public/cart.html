@@ -119,6 +119,176 @@
   </form>
 
   <script>
+    const API_URL = 'http://127.0.0.1:8000';
+
+    document.getElementById('form-carrinho').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+
+        await fetch(API_URL + '/cart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        e.target.reset();
+        loadProductsVariations();
+        loadCoupons();
+        loadCartGetTotal();
+        loadCart();
+        loadAddresses();
+        loadClients();
+    });
+
+    document.getElementById('form-cupom').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+
+        await fetch(API_URL + '/cart/coupon', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        e.target.reset();
+        loadProductsVariations();
+        loadCoupons();
+        loadCartGetTotal();
+        loadCart();
+        loadAddresses();
+        loadClients();
+    });
+
+    async function loadClients() {
+        const tbody = document.getElementById('client_id');
+        tbody.innerHTML = '';
+        const res = await fetch(API_URL + '/clients')
+        .then(res => res.json())
+        .then(clients => {
+            clients.data.forEach(c => {
+            tbody.innerHTML += `
+                    <option value=${c.id}>${c.name}</option>
+                `;
+            });
+        })
+        .catch(err => {
+            console.error('Erro ao carregar clientes:', err);
+        });
+    }
+
+    async function loadAddresses() {
+        const tbody = document.getElementById('address_id');
+        tbody.innerHTML = '';
+        const res = await fetch(API_URL + '/addresses')
+        .then(res => res.json())
+        .then(addresses => {
+            addresses.data.forEach(a => {
+            tbody.innerHTML += `
+                    <option value=${a.id}>${a.street} - ${a.district} - ${a.city}/${a.state}</option>
+                `;
+            });
+        })
+        .catch(err => {
+            console.error('Erro ao carregar endereço:', err);
+        });
+    }
+
+    async function loadVariationProductById(id) {
+        try {
+            const response = await fetch(API_URL + '/variations/' + id)
+            if (!response.ok) throw new Error('Não encontrado variação do produto!');
+            const data = await response.json();
+            return data.data.name;
+        } catch (error) {
+            console.error('Erro na busca da variação do produto: ', err);
+            return 'Erro ao buscar';
+        }
+    }
+
+    async function loadCart() {
+      const tbody = document.getElementById('tabela-carrinho');
+      tbody.innerHTML = '';
+      const res = await fetch(API_URL + '/cart')
+      .then(res => res.json())
+      .then(cart => {
+        console.log(cart)
+          cart?.data?.items?.forEach(async (c) => {
+            const variationName = await loadVariationProductById(c.variation_id);
+              tbody.innerHTML += `
+                      <tr>
+                          <td>${variationName}</td>
+                          <td>${c.quantity}</td>
+                          <td>R$ ${c.price}</td>
+                          <td>${c.quantity * c.price}</td>
+                      </tr>
+                  `;
+          });
+      })
+      .catch(err => {
+          console.error('Erro ao carregar estoque:', err);
+      });
+    }
+
+    async function loadCartGetTotal() {
+        const subtotal = document.getElementById('subtotal');
+        const discount = document.getElementById('discount');
+        const freight = document.getElementById('freight');
+        const total = document.getElementById('total');
+
+        const res = await fetch(API_URL + '/cart/total')
+        .then(res => res.json())
+        .then(data => {
+            const values = data.data;
+            subtotal.innerHTML = values.subtotal;
+            discount.innerHTML = values.discount;
+            freight.innerHTML = values.freight;
+            total.innerHTML = values.total;
+        })
+        .catch(err => {
+            console.error('Erro ao carregar variações dos produtos:', err);
+        });
+    }
+
+    async function loadCoupons() {
+        const tbody = document.getElementById('coupon_id');
+        tbody.innerHTML = '';
+        const res = await fetch(API_URL + '/coupons')
+        .then(res => res.json())
+        .then(coupons => {
+            coupons.data.forEach(c => {
+            tbody.innerHTML += `
+                    <option value=${c.id}>${c.code}</option>
+                `;
+            });
+        })
+        .catch(err => {
+            console.error('Erro ao carregar variações dos produtos:', err);
+        });
+    }
+
+    async function loadProductsVariations() {
+        const tbody = document.getElementById('variation_id');
+        tbody.innerHTML = '';
+        const res = await fetch(API_URL + '/variations')
+        .then(res => res.json())
+        .then(variations => {
+            variations.data.forEach(v => {
+            tbody.innerHTML += `
+                    <option value=${v.id}>${v.name}</option>
+                `;
+            });
+        })
+        .catch(err => {
+            console.error('Erro ao carregar variações dos produtos:', err);
+        });
+    }
+
+    loadProductsVariations();
+    loadCoupons();
+    loadCartGetTotal();
+    loadCart();
+    loadAddresses();
+    loadClients();
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
